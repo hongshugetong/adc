@@ -153,8 +153,8 @@ void StartEC200task(void *argument)
 {
   /* USER CODE BEGIN StartEC200task */
     float adc_value;
-    EC20_Init();
-    MQTT_Init();
+    // EC20_Init();
+    // MQTT_Init();
     // osDelay( pdMS_TO_TICKS(10000));
     // AT_setMQTT_version(1);
     // osDelay( pdMS_TO_TICKS(1000));
@@ -165,8 +165,8 @@ void StartEC200task(void *argument)
 //   /* Infinite loop */
   for(;;)
   {
-    osMessageQueueGet(Adcqueue01Handle, &adc_value, 0, osWaitForever);
-    AT_Publish_MQTT(adc_value);
+    // osMessageQueueGet(Adcqueue01Handle, &adc_value, 0, osWaitForever);
+    // AT_Publish_MQTT(adc_value);
     osDelay(pdMS_TO_TICKS(10000));
   }
   /* USER CODE END StartEC200task */

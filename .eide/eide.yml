@@ -58,8 +58,6 @@ targets:
             output-debug-info: enable
             use-newlib-nano: true
           linker:
-            $outputTaskExcludes:
-              - .bin
             $toolName: auto
             LIB_FLAGS: -lm -u_printf_float
             output-format: elf
@@ -79,6 +77,11 @@ targets:
         otherCmds: ""
         proType: 1
         speed: 8000
+      OpenOCD:
+        baseAddr: "0x08000000"
+        bin: ""
+        interface: stlink
+        target: stm32f1x
       STLink:
         address: "0x08000000"
         bin: ""

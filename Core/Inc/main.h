@@ -73,7 +73,24 @@ extern osMessageQueueId_t Adcqueue01Handle;
 extern UART_HandleTypeDef huart4;
 extern UART_HandleTypeDef huart1;
 extern UART_HandleTypeDef huart3;
-extern uint8_t AT_Recive[50];
+extern uint8_t AT_Recive[1200];
+typedef struct{
+  uint8_t Update_Buffer[1024];
+  uint32_t W25Q64_Block_num;
+  uint32_t XMODE_TIMER;
+  uint32_t XMODE_NUMBER;
+  uint32_t XMODE_CRC;
+}UPDATEA_INFO;
+enum OTA_FLAG {
+    Ready  = 1,
+    Unredy = 0
+};
+typedef struct
+{
+    enum OTA_FLAG flag;
+    uint32_t FileLen[5];
+    uint8_t OTA_VERSION[32];
+} OTA_INFO;
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus
