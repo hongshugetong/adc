@@ -190,7 +190,7 @@ void AT_CREAT_GET(uint8_t mode,uint8_t* tid,uint8_t Range_start,uint8_t Range_en
         sprintf(GET,"GET https://iot-api.heclouds.com/fuse-ota/fThVVTJwFW/ec200/check?type=2&version=%s HTTP/1.1\r\n", OTA_VERSION);
         uint8_t Host[30]="host:iot-api.heclouds.com\r\n";
         uint8_t Content_Type[40]="Content-Type:application/json\r\n";
-        uint8_t Authorization[110]="version=2018-10-31&res=products%2FfThVVTJwFW&et=1799825577&method=md5&sign=E0kvULpfTgwdKhkyBCMl7g%3D%3D\r\n";
+        uint8_t Authorization[110]="Authorization:version=2018-10-31&res=products%2FfThVVTJwFW&et=1799825577&method=md5&sign=E0kvULpfTgwdKhkyBCMl7g%3D%3D\r\n";
         uint8_t accpet[20]="accept:*/*\r\n";
         uint8_t Content_length[30]="Content-Length:0\r\n";
         uint8_t End[2]="\r\n";
@@ -209,7 +209,7 @@ void AT_CREAT_GET(uint8_t mode,uint8_t* tid,uint8_t Range_start,uint8_t Range_en
         memset(GET1, '\0', sizeof(GET1));
         sprintf(GET1,"GET https://iot-api.heclouds.com/fuse-ota/fThVVTJwFW/ec200/%s/download HTTP/1.1\r\n", tid);
         uint8_t Host1[30]="host:iot-api.heclouds.com\r\n";
-        uint8_t Authorization1[110]="version=2018-10-31&res=products%2FfThVVTJwFW&et=1799825577&method=md5&sign=E0kvULpfTgwdKhkyBCMl7g%3D%3D\r\n";
+        uint8_t Authorization1[110]="Authorization:version=2018-10-31&res=products%2FfThVVTJwFW&et=1799825577&method=md5&sign=E0kvULpfTgwdKhkyBCMl7g%3D%3D\r\n";
         uint8_t Range[30];
         memset(Range, '\0', 30);
         sprintf(Range,"Range:%d-%d\r\n",Range_start,Range_end);
@@ -222,19 +222,117 @@ void AT_CREAT_GET(uint8_t mode,uint8_t* tid,uint8_t Range_start,uint8_t Range_en
         break;
     }
 }
+
+void AT_SET_POST(uint8_t mode,uint8_t*OTA_VERSION,uint8_t* tid,uint8_t step)
+{
+    switch (mode)
+    {
+        case 0:
+        //上报版本号时的POST
+        memset(AT_message, '\0', 310);
+        uint8_t POST[120];
+        memset(POST, '\0', sizeof(POST));
+        sprintf(POST,"POST https://iot-api.heclouds.com/fuse-ota/fThVVTJwFW/ec200/version HTTP/1.1\r\n");
+        uint8_t Host[30]="host:iot-api.heclouds.com\r\n";
+        uint8_t Content_Type[40]="Content-Type: application/json\r\n";
+        uint8_t Authorization[110]="Authorization:version=2018-10-31&res=products%2FfThVVTJwFW&et=1799825577&method=md5&sign=E0kvULpfTgwdKhkyBCMl7g%3D%3D\r\n";
+        uint8_t Content_length[30];
+        memset(Content_length, '\0', 30);
+        uint8_t End[2]="\r\n";
+        char body[50];
+        memset(body, '\0', sizeof(body));
+        sprintf(body,"{\"s_version\":\"%s\", \"f_version\": \"0\"}",OTA_VERSION);
+        sprintf(Content_length,"Content-Length:%d\r\n",sizeof(body));
+        strcat(AT_message,POST);
+        strcat(AT_message,Host);
+        strcat(AT_message,Content_Type);
+        strcat(AT_message,Authorization);
+        strcat(AT_message,Content_length);
+        strcat(AT_message,End);
+        strcat(AT_message,body);
+        break;
+        case 1:
+        //上报升级结果时的POST
+        memset(AT_message, '\0', 310);
+        uint8_t POST1[120];
+        memset(POST1, '\0', sizeof(POST1));
+        sprintf(POST1,"POST https://iot-api.heclouds.com/fuse-ota/fThVVTJwFW/ec200/%s/status HTTP/1.1\r\n", tid);
+        uint8_t Host1[30]="host:iot-api.heclouds.com\r\n";
+        uint8_t Content_Type1[40]="Content-Type: application/json\r\n";
+        uint8_t Authorization1[110]="Authorization:version=2018-10-31&res=products%2FfThVVTJwFW&et=1799825577&method=md5&sign=E0kvULpfTgwdKhkyBCMl7g%3D%3D\r\n";
+        uint8_t Content_length1[30];
+        memset(Content_length1, '\0', 30);
+        uint8_t End1[2]="\r\n";
+        char body1[50];
+        memset(body1, '\0', sizeof(body1));
+        sprintf(body1,"{\"step\":%d}",step);
+        sprintf(Content_length1,"Content-Length:%d\r\n",sizeof(body1));
+        strcat(AT_message,POST1);
+        strcat(AT_message,Host1);
+        strcat(AT_message,Content_Type1);
+        strcat(AT_message,Authorization1);
+        strcat(AT_message,Content_length1);
+        strcat(AT_message,End1);
+        strcat(AT_message,body1);
+        break;
+    }
+}
+
+void AT_GET_TID_VERSION_SIZE(uint8_t*OTA_VERSION,uint32_t FIlelen)
+{
+
+    //提取目标版本号，tid和文件大小
+    memset(OTA_VERSION, '\0', sizeof(OTA_VERSION));
+    memset(TID, '\0', sizeof(TID));
+    uint8_t* version_start=strstr(AT_Recive,"\"target\":\"")+strlen("\"target\":\"");
+    uint8_t* version_end=strstr(AT_Recive,"\",\"tid\":");
+    uint8_t* tid_start=strstr(AT_Recive,"\"tid\":")+strlen("\"tid\":");
+    uint8_t* tid_end=strstr(AT_Recive,",\"size\":");
+    uint8_t* size_start=strstr(AT_Recive,"\"size\":")+strlen("\"size\":");
+    uint8_t* size_end=strstr(AT_Recive,",\"md5\":");
+    if(version_start!=NULL&&version_end!=NULL&&tid_start!=NULL&&tid_end!=NULL&&size_start!=NULL&&size_end!=NULL)
+    {
+        memset(OTA_VERSION, '\0', sizeof(OTA_VERSION));
+        memset(TID, '\0', sizeof(TID));
+        memcpy(OTA_VERSION,version_start,version_end-version_start);
+        memcpy(TID,tid_start,tid_end-tid_start);
+        uint8_t FIlelen_size=size_end-size_start;
+        FIlelen=0;
+        for(int i=0;i<FIlelen_size;i++)
+        {
+            FIlelen=FIlelen * 10 + (*(size_start+i) - '0');
+        }
+        uint8_t message[30];
+        sprintf(message, "v:%s  tid:%s size:%d\r\n",OTA_VERSION,TID,FIlelen);
+        HAL_UART_Transmit(&huart1,"message",28, 1000);
+    }
+    else 
+    {
+        HAL_UART_Transmit(&huart1,"服务器回复的任务消息出错\r\n",39, 1000);
+    }
+}
 void AT_SET_URL(uint8_t* url)
 {
 
+    memset(AT_message, '\0', sizeof(AT_message));
     sprintf(AT_message,"AT+QHTTPURL=%d,80\r\n",sizeof(url));
     AT_Send(AT_message);
-    memset(AT_message, '\0', sizeof(AT_message));
     osDelay(pdMS_TO_TICKS(500));
     AT_Send(url);
 
 }
-
+void AT_Http_Read()
+{
+    memset(AT_message, '\0', sizeof(AT_message));
+    sprintf(AT_message, "AT+QHTTPREAD=80\r\n");
+    AT_Send(AT_message);
+    osDelay(pdMS_TO_TICKS(500));
+    memset(AT_message, '\0', sizeof(AT_message));
+    
+}
 void AT_SET_GET(void)
 {
+    memset(AT_message, '\0', sizeof(AT_message));
     sprintf(AT_message,"AT+QHTTPGET=1\r\n");
     AT_Send(AT_message);
     memset(AT_message, '\0', sizeof(AT_message));

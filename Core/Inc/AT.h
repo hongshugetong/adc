@@ -5,7 +5,7 @@
 #include "stdio.h"
 #include <stdbool.h>
 #include <string.h>
-
+#include "math.h"
 /* AT命令处理状态 */
 
 #define AT_TOKEN "version=2018-10-31&res=products%2FfThVVTJwFW&et=1799825577&method=md5&sign=E0kvULpfTgwdKhkyBCMl7g%3D%3D"
