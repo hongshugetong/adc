@@ -63,6 +63,8 @@ void Error_Handler(void);
 #define Reset_4G_GPIO_Port GPIOA
 #define Pwr_4G_Pin GPIO_PIN_1
 #define Pwr_4G_GPIO_Port GPIOB
+#define W25Q64_CS_Pin GPIO_PIN_15
+#define W25Q64_CS_GPIO_Port GPIOG
 
 /* USER CODE BEGIN Private defines */
 extern uint16_t ADC_data[10];

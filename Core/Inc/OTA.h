@@ -1,0 +1,45 @@
+/**
+  ******************************************************************************
+  * @file    template.h
+  * @author  Your Name
+  * @brief   Header file for template functionality
+  ******************************************************************************
+  * @attention
+  *
+  * This file contains the declarations for the template module.
+  *
+  ******************************************************************************
+  */
+
+/* Define to prevent recursive inclusion -------------------------------------*/
+#ifndef OTA_H
+#define OTA_H
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+/* Includes ------------------------------------------------------------------*/
+#include "main.h"
+#include "AT.h"
+#include "W25Q64.h"
+// #include "stm32f4xx_hal.h"  // 根据需要取消注释
+
+/* Exported types ------------------------------------------------------------*/
+extern uint8_t URL[80];
+extern OTA_INFO OTA_info;
+extern uint8_t TID[20];
+extern char* Readystrx;
+/* Exported constants --------------------------------------------------------*/
+
+/* Exported macro ------------------------------------------------------------*/
+
+/* Exported functions --------------------------------------------------------*/
+void OTA_GET_OTAFlag(void);
+#ifdef __cplusplus
+}
+#endif
+
+#endif /* TEMPLATE_H */
+
+/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

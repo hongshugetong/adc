@@ -111,10 +111,10 @@ void StartDataprocessTask(void *argument)
     uint16_t average;
     float data;
     for (;;) {
-        //osSemaphoreAcquire(processHandle, osWaitForever);
-        average = processArray(ADC_data, 10);
-        data    = ad12_to_float(average);
-        osMessageQueuePut(Adcqueue01Handle, &data, 0, osWaitForever);
+        // average = processArray(ADC_data, 10);
+        // data    = ad12_to_float(average);
+        // osMessageQueuePut(Adcqueue01Handle, &data, 0, osWaitForever);
+        osDelay(100);
     }
     /* USER CODE END StartDataprocessTask */
 }
@@ -141,9 +141,9 @@ void StartBlueTask(void *argument)
     uint8_t message[20] = {0};
     for (;;) {
 
-        osMessageQueueGet(Adcqueue01Handle, &data, 0, osWaitForever);
-        sprintf(message, "Blue ADC: %0.4f", data);
-        HAL_UART_Transmit(&huart4, message, sizeof(message), 100);
+        // osMessageQueueGet(Adcqueue01Handle, &data, 0, osWaitForever);
+        // sprintf(message, "Blue ADC: %0.4f", data);
+        // HAL_UART_Transmit(&huart4, message, sizeof(message), 100);
         osDelay(1000);
     }
     /* USER CODE END StartBlueTask */
@@ -153,7 +153,8 @@ void StartEC200task(void *argument)
 {
   /* USER CODE BEGIN StartEC200task */
     float adc_value;
-    // EC20_Init();
+    EC20_Init();
+    AT_HTTP_Init();
     // MQTT_Init();
     // osDelay( pdMS_TO_TICKS(10000));
     // AT_setMQTT_version(1);
@@ -167,6 +168,7 @@ void StartEC200task(void *argument)
   {
     // osMessageQueueGet(Adcqueue01Handle, &adc_value, 0, osWaitForever);
     // AT_Publish_MQTT(adc_value);
+    OTA_GET_OTAFlag();
     osDelay(pdMS_TO_TICKS(10000));
   }
   /* USER CODE END StartEC200task */

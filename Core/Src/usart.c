@@ -205,7 +205,7 @@ void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle)
     hdma_usart3_rx.Init.MemInc = DMA_MINC_ENABLE;
     hdma_usart3_rx.Init.PeriphDataAlignment = DMA_PDATAALIGN_BYTE;
     hdma_usart3_rx.Init.MemDataAlignment = DMA_MDATAALIGN_BYTE;
-    hdma_usart3_rx.Init.Mode = DMA_CIRCULAR;
+    hdma_usart3_rx.Init.Mode = DMA_NORMAL;
     hdma_usart3_rx.Init.Priority = DMA_PRIORITY_MEDIUM;
     hdma_usart3_rx.Init.FIFOMode = DMA_FIFOMODE_DISABLE;
     if (HAL_DMA_Init(&hdma_usart3_rx) != HAL_OK)
@@ -215,6 +215,9 @@ void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle)
 
     __HAL_LINKDMA(uartHandle,hdmarx,hdma_usart3_rx);
 
+    /* USART3 interrupt Init */
+    HAL_NVIC_SetPriority(USART3_IRQn, 5, 0);
+    HAL_NVIC_EnableIRQ(USART3_IRQn);
   /* USER CODE BEGIN USART3_MspInit 1 */
 
   /* USER CODE END USART3_MspInit 1 */
@@ -278,6 +281,9 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* uartHandle)
 
     /* USART3 DMA DeInit */
     HAL_DMA_DeInit(uartHandle->hdmarx);
+
+    /* USART3 interrupt Deinit */
+    HAL_NVIC_DisableIRQ(USART3_IRQn);
   /* USER CODE BEGIN USART3_MspDeInit 1 */
 
   /* USER CODE END USART3_MspDeInit 1 */
@@ -288,7 +294,14 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* uartHandle)
 void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
 {
     if (huart->Instance == USART3) 
-    {
+    { 
+        for (uint16_t i = Size; i < sizeof(AT_Recive); i++) {
+        AT_Recive[i] = 0;
+        }
+        //memset(AT_Recive, '\0', sizeof(AT_Recive));
+        HAL_UARTEx_ReceiveToIdle_DMA(&huart3, AT_Recive, sizeof(AT_Recive));
+        // 关闭DMA传输过半中断（HAL库默认开启，但我们只需要接收完成中断）
+        __HAL_DMA_DISABLE_IT(huart3.hdmarx, DMA_IT_HT);
         // 在这里处理接收到的数据，Size 是接收到的数据长度
         // 例如，可以将数据存储到一个缓冲区，或者设置一个标志位通知其他任务
     }

@@ -1,5 +1,5 @@
 #include  "AT.h"
-uint8_t AT_message[310];
+uint8_t AT_message[410];
 uint8_t AT_Json[60];
 uint8_t AT_Recive[1200];
 uint8_t URL[80];
@@ -156,7 +156,7 @@ void AT_SET_sslversion(void)
     AT_Send(AT_message);
     memset(AT_message, '\0', sizeof(AT_message));
 }
-void AT_CREAT_URL(uint8_t mode,uint8_t* tid)
+void AT_CREAT_URL(uint8_t mode,uint8_t step)
 {
     switch (mode)
     {
@@ -173,7 +173,12 @@ void AT_CREAT_URL(uint8_t mode,uint8_t* tid)
         case 2:
         //下载升级包时的URL
         memset(URL, '\0', sizeof(URL));
-        sprintf(URL,"https://iot-api.heclouds.com/fuse-ota/fThVVTJwFW/ec200/%s/download",tid);
+        sprintf(URL,"https://iot-api.heclouds.com/fuse-ota/fThVVTJwFW/ec200/%s/download",TID);
+        break;
+        case 3:
+        //上报升级状态时的URL
+        memset(URL, '\0', sizeof(URL));
+        sprintf(URL,"https://iot-api.heclouds.com/fuse-ota/fThVVTJwFW/ec200/%d/status",step);
         break;
     }
 }
@@ -184,7 +189,7 @@ void AT_CREAT_GET(uint8_t mode,uint8_t* tid,uint8_t Range_start,uint8_t Range_en
     {
         case 0:
         //检测升级任务时的GET
-        memset(AT_message, '\0', 310);
+        memset(AT_message, '\0', sizeof(AT_message));
         uint8_t GET[120];
         memset(GET, '\0', sizeof(GET));
         sprintf(GET,"GET https://iot-api.heclouds.com/fuse-ota/fThVVTJwFW/ec200/check?type=2&version=%s HTTP/1.1\r\n", OTA_VERSION);
@@ -197,14 +202,14 @@ void AT_CREAT_GET(uint8_t mode,uint8_t* tid,uint8_t Range_start,uint8_t Range_en
         strcat(AT_message,GET);
         strcat(AT_message,Content_Type);
         strcat(AT_message,Authorization);
-        strcat(AT_message, Host);
+        strcat(AT_message,Host);
         strcat(AT_message,accpet);
         strcat(AT_message,Content_length);
         strcat(AT_message,End);
         break;
         case 1:
         //下载升级包时的GET
-        memset(AT_message, '\0', 310);
+        memset(AT_message, '\0', sizeof(AT_message));
         uint8_t GET1[120];
         memset(GET1, '\0', sizeof(GET1));
         sprintf(GET1,"GET https://iot-api.heclouds.com/fuse-ota/fThVVTJwFW/ec200/%s/download HTTP/1.1\r\n", tid);
@@ -223,26 +228,25 @@ void AT_CREAT_GET(uint8_t mode,uint8_t* tid,uint8_t Range_start,uint8_t Range_en
     }
 }
 
-void AT_SET_POST(uint8_t mode,uint8_t*OTA_VERSION,uint8_t* tid,uint8_t step)
+void AT_CREAT_POST(uint8_t mode,uint8_t*OTA_VERSION,uint8_t* tid,uint8_t step)
 {
     switch (mode)
     {
         case 0:
         //上报版本号时的POST
-        memset(AT_message, '\0', 310);
-        uint8_t POST[120];
-        memset(POST, '\0', sizeof(POST));
-        sprintf(POST,"POST https://iot-api.heclouds.com/fuse-ota/fThVVTJwFW/ec200/version HTTP/1.1\r\n");
+        memset(AT_message, '\0', sizeof(AT_message));
+        uint8_t POST[100]="POST https://iot-api.heclouds.com/fuse-ota/fThVVTJwFW/ec200/version HTTP/1.1\r\n";
         uint8_t Host[30]="host:iot-api.heclouds.com\r\n";
         uint8_t Content_Type[40]="Content-Type: application/json\r\n";
-        uint8_t Authorization[110]="Authorization:version=2018-10-31&res=products%2FfThVVTJwFW&et=1799825577&method=md5&sign=E0kvULpfTgwdKhkyBCMl7g%3D%3D\r\n";
+        uint8_t Authorization[130]="Authorization:version=2018-10-31&res=products%2FfThVVTJwFW&et=1799825577&method=md5&sign=E0kvULpfTgwdKhkyBCMl7g%3D%3D\r\n";
         uint8_t Content_length[30];
         memset(Content_length, '\0', 30);
-        uint8_t End[2]="\r\n";
-        char body[50];
+        uint8_t End[3]="\r\n";
+        char body[70];
         memset(body, '\0', sizeof(body));
+        sprintf(OTA_VERSION,"12.3");
         sprintf(body,"{\"s_version\":\"%s\", \"f_version\": \"0\"}",OTA_VERSION);
-        sprintf(Content_length,"Content-Length:%d\r\n",sizeof(body));
+        sprintf(Content_length , "Content-Length:%d\r\n", strlen(body));
         strcat(AT_message,POST);
         strcat(AT_message,Host);
         strcat(AT_message,Content_Type);
@@ -253,7 +257,7 @@ void AT_SET_POST(uint8_t mode,uint8_t*OTA_VERSION,uint8_t* tid,uint8_t step)
         break;
         case 1:
         //上报升级结果时的POST
-        memset(AT_message, '\0', 310);
+        memset(AT_message, '\0', sizeof(AT_message));
         uint8_t POST1[120];
         memset(POST1, '\0', sizeof(POST1));
         sprintf(POST1,"POST https://iot-api.heclouds.com/fuse-ota/fThVVTJwFW/ec200/%s/status HTTP/1.1\r\n", tid);
@@ -311,14 +315,34 @@ void AT_GET_TID_VERSION_SIZE(uint8_t*OTA_VERSION,uint32_t FIlelen)
         HAL_UART_Transmit(&huart1,"服务器回复的任务消息出错\r\n",39, 1000);
     }
 }
-void AT_SET_URL(uint8_t* url)
+void AT_SET_URL(uint8_t mode,uint8_t step)
 {
-
+    AT_CREAT_URL(mode,step);
     memset(AT_message, '\0', sizeof(AT_message));
-    sprintf(AT_message,"AT+QHTTPURL=%d,80\r\n",sizeof(url));
+    sprintf(AT_message,"AT+QHTTPURL=%d,80\r\n",strlen(URL));
     AT_Send(AT_message);
-    osDelay(pdMS_TO_TICKS(500));
-    AT_Send(url);
+    osDelay(pdMS_TO_TICKS(1000));
+    Readystrx=AT_Recivejudge("CONNECT");
+    while(Readystrx==NULL)
+    {
+        HAL_UART_Transmit(&huart1,"发送设置URL指令失败\r\n", 30, 1000);
+        AT_Send(AT_message);
+        osDelay(pdMS_TO_TICKS(1000));
+        Readystrx=AT_Recivejudge("CONNECT");
+    }
+    HAL_UART_Transmit(&huart1,"发送设置URL指令成功\r\n", 30, 1000);
+    AT_Send(URL);
+    osDelay(pdMS_TO_TICKS(1000));
+    Readystrx=AT_Recivejudge("OK");
+    while(Readystrx==NULL)
+    {
+        HAL_UART_Transmit(&huart1,"发送URL失败\r\n", 20, 1000);
+        AT_Send(URL);
+        osDelay(pdMS_TO_TICKS(1000));
+        Readystrx=AT_Recivejudge("OK");
+    }
+    HAL_UART_Transmit(&huart1,"发送URL成功\r\n", 20, 1000);
+    memset(AT_message, '\0', sizeof(AT_message));
 
 }
 void AT_Http_Read()
@@ -330,11 +354,74 @@ void AT_Http_Read()
     memset(AT_message, '\0', sizeof(AT_message));
     
 }
-void AT_SET_GET(void)
+void AT_SET_GET(uint8_t mode,uint8_t* tid,uint8_t Range_start,uint8_t Range_end,uint8_t*OTA_VERSION)
 {
-    memset(AT_message, '\0', sizeof(AT_message));
-    sprintf(AT_message,"AT+QHTTPGET=1\r\n");
+    uint8_t AT_GET[30];
+    memset(AT_GET, '\0', sizeof(AT_GET));
+    AT_CREAT_GET(mode,tid,Range_start,Range_end,OTA_VERSION);
+    sprintf(AT_GET,"AT+QHTTPGET=80,%d,80\r\n",sizeof(AT_message));
+    AT_Send(AT_GET);
+    osDelay(pdMS_TO_TICKS(100));
+    strx=AT_Recivejudge("CONNECT");
+    while(strx==NULL)
+    {
+        HAL_UART_Transmit(&huart1, "发送GET报文指令失败\r\n", 30, 100);
+        sprintf(AT_GET,"AT+QHTTPGET=80,%d,80\r\n",sizeof(AT_message));
+        AT_Send(AT_GET);
+        osDelay(pdMS_TO_TICKS(500));
+        strx=AT_Recivejudge("CONNECT");
+    }
+    HAL_UART_Transmit(&huart1, "发送GET报文指令成功\r\n", 30, 100);
     AT_Send(AT_message);
+    osDelay(pdMS_TO_TICKS(100));
+    strx=AT_Recivejudge("0,200,");
+    while(strx==NULL)
+    {
+        HAL_UART_Transmit(&huart1, "发送GET报文失败\r\n", 24, 100);
+        AT_Send(AT_message);
+        osDelay(pdMS_TO_TICKS(500));
+        strx=AT_Recivejudge("0,200,");
+    }
+    HAL_UART_Transmit(&huart1, "发送GET报文成功\r\n", 24, 100);
+    memset(AT_message, '\0', sizeof(AT_message));
+}
+void AT_SET_POST(uint8_t mode,uint8_t*OTA_VERSION,uint8_t* tid,uint8_t step)
+{
+    uint8_t AT_POST[30];
+    memset(AT_POST, '\0', sizeof(AT_POST));
+    memset(AT_message, '\0', sizeof(AT_message));
+    AT_CREAT_POST(mode,OTA_VERSION,tid,step);
+    sprintf(AT_POST,"AT+QHTTPPOST=%d,80,80\r\n",strlen(AT_message));
+    HAL_UART_Transmit(&huart1, AT_POST, sizeof(AT_POST), 100);
+    AT_Send(AT_POST);
+    HAL_UART_Transmit(&huart1, AT_Recive, strlen(AT_Recive), 100);
+    osDelay(pdMS_TO_TICKS(1000));
+    HAL_UART_Transmit(&huart1, AT_Recive, strlen(AT_Recive), 100);
+    strx=AT_Recivejudge("CONNECT");
+    while(strx==NULL)
+    {
+        HAL_UART_Transmit(&huart1, "发送POST报文指令失败\r\n", 31, 100);
+        sprintf(AT_POST,"AT+QHTTPPOST=%d,80,80\r\n",strlen(AT_message));
+        AT_Send(AT_POST);
+        osDelay(pdMS_TO_TICKS(1000));
+        strx=AT_Recivejudge("CONNECT");
+    }
+    HAL_UART_Transmit(&huart1, "发送POST报文指令成功\r\n", 31, 100);
+    AT_CREAT_POST(mode,OTA_VERSION,tid,step);
+    AT_Send(AT_message);
+    osDelay(pdMS_TO_TICKS(1000));
+    strx=AT_Recivejudge("0,200,");
+    while(strx==NULL)
+    {
+        HAL_UART_Transmit(&huart1, "发送POST报文失败\r\n", 25, 100);
+        HAL_UART_Transmit(&huart1, AT_Recive, strlen(AT_Recive), 100);
+        osDelay(pdMS_TO_TICKS(1000));
+        HAL_UART_Transmit(&huart1, AT_message, strlen(AT_message), 100);
+        AT_Send(AT_message);
+        osDelay(pdMS_TO_TICKS(500));
+        strx=AT_Recivejudge("0,200,");
+    }
+    HAL_UART_Transmit(&huart1, "发送POST报文成功\r\n", 25, 100);
     memset(AT_message, '\0', sizeof(AT_message));
 }
 void EC20_Init(void)
@@ -430,8 +517,9 @@ void AT_HTTP_Init(void)
         AT_SET_contextid();
         osDelay(pdMS_TO_TICKS(500));
         Readystrx=AT_Recivejudge("OK");
+        HAL_UART_Transmit(&huart1,"HTTP contextid设置出错\r\n", 29, 1000);
     }
-    HAL_UART_Transmit(&huart1,"HTTP contextid已设置", 22, 1000);
+    HAL_UART_Transmit(&huart1,"HTTP contextid已设置\r\n", 26, 1000);
     osDelay(pdMS_TO_TICKS(500));
     AT_SET_responseheader();
     osDelay(pdMS_TO_TICKS(500));
@@ -445,7 +533,7 @@ void AT_HTTP_Init(void)
         osDelay(pdMS_TO_TICKS(500));
         Readystrx=AT_Recivejudge("OK");
     }
-    HAL_UART_Transmit(&huart1, "HTTP QIACT已设置", 22, 1000);
+    HAL_UART_Transmit(&huart1, "HTTP QIACT已设置\r\n", 22, 1000);
     osDelay(pdMS_TO_TICKS(500));
     AT_SET_sslctxid();
     Readystrx=AT_Recivejudge("OK");
@@ -455,7 +543,7 @@ void AT_HTTP_Init(void)
         osDelay(pdMS_TO_TICKS(500));
         Readystrx=AT_Recivejudge("OK");
     }
-    HAL_UART_Transmit(&huart1, "HTTP sslctxid已设置", 22, 1000);
+    HAL_UART_Transmit(&huart1, "HTTP sslctxid已设置\r\n", 25, 1000);
     osDelay(pdMS_TO_TICKS(500));
     AT_SET_seclevel();
     Readystrx=AT_Recivejudge("OK");
@@ -465,7 +553,7 @@ void AT_HTTP_Init(void)
         osDelay(pdMS_TO_TICKS(500));
         Readystrx=AT_Recivejudge("OK");
     }
-    HAL_UART_Transmit(&huart1, "HTTP seclevel已设置", 22, 1000);
+    HAL_UART_Transmit(&huart1, "HTTP seclevel已设置\r\n", 25, 1000);
     osDelay(pdMS_TO_TICKS(500));
     AT_SET_sslversion();
     Readystrx=AT_Recivejudge("OK");
@@ -475,6 +563,6 @@ void AT_HTTP_Init(void)
         osDelay(pdMS_TO_TICKS(500));
         Readystrx=AT_Recivejudge("OK");
     }
-    HAL_UART_Transmit(&huart1, "HTTP sslversion已设置", 22, 1000);
+    HAL_UART_Transmit(&huart1, "HTTP sslversion已设置\r\n", 27, 1000);
     osDelay(pdMS_TO_TICKS(500));
 }

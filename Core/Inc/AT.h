@@ -18,6 +18,7 @@
 
 
 /* 函数声明 */
+char * AT_Recivejudge(char*cmd);
 void AT_Send(uint8_t *cmd);
 void AT_setMQTT_version(uint8_t version);
 void AT_OpenMQTT(void);
@@ -27,4 +28,13 @@ void AT_Publish_MQTT(float adc_value);
 void AT_ATE0(void);
 void EC20_Init(void);
 void MQTT_Init(void);
+void AT_CREAT_URL(uint8_t mode,uint8_t step);
+void AT_CREAT_GET(uint8_t mode,uint8_t* tid,uint8_t Range_start,uint8_t Range_end,uint8_t*OTA_VERSION);
+void AT_CREAT_POST(uint8_t mode,uint8_t*OTA_VERSION,uint8_t* tid,uint8_t step);
+void AT_GET_TID_VERSION_SIZE(uint8_t*OTA_VERSION,uint32_t FIlelen);
+void AT_SET_URL(uint8_t mode,uint8_t step);
+void AT_Http_Read();
+void AT_SET_GET(uint8_t mode,uint8_t* tid,uint8_t Range_start,uint8_t Range_end,uint8_t*OTA_VERSION);
+void AT_SET_POST(uint8_t mode,uint8_t*OTA_VERSION,uint8_t* tid,uint8_t step);
+void AT_HTTP_Init(void);
 #endif /* __AT_H */

@@ -21,6 +21,7 @@
 #include "cmsis_os.h"
 #include "adc.h"
 #include "dma.h"
+#include "spi.h"
 #include "usart.h"
 #include "gpio.h"
 
@@ -37,6 +38,7 @@
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
 uint16_t ADC_data[10] = {0};
+OTA_INFO OTA_info;
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -96,6 +98,7 @@ int main(void)
   MX_UART4_Init();
   MX_USART1_UART_Init();
   MX_USART3_UART_Init();
+  MX_SPI1_Init();
   /* USER CODE BEGIN 2 */
   HAL_ADC_Start_DMA(&hadc1, ADC_data, 10);
   __HAL_DMA_DISABLE_IT(&hdma_adc1, DMA_IT_HT);
@@ -105,6 +108,7 @@ int main(void)
   HAL_UARTEx_ReceiveToIdle_DMA(&huart3, AT_Recive, sizeof(AT_Recive));
   // 关闭DMA传输过半中断（HAL库默认开启，但我们只需要接收完成中断）
   __HAL_DMA_DISABLE_IT(huart3.hdmarx, DMA_IT_HT);
+
   /* USER CODE END 2 */
 
   /* Init scheduler */
