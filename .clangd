@@ -6,6 +6,13 @@ CompileFlags:
     - -IE:\stm32clt\STM32CubeCLT_1.18.0\GNU-tools-for-STM32\lib\gcc\arm-none-eabi\13.3.1\include
     - -IE:\stm32clt\STM32CubeCLT_1.18.0\GNU-tools-for-STM32\lib\gcc\arm-none-eabi\13.3.1\include-fixed
     - -IE:\stm32clt\STM32CubeCLT_1.18.0\GNU-tools-for-STM32\arm-none-eabi\include
+    - -ID:\Apps\arm_gcc\14.3 rel1\arm-none-eabi\include\c++\14.3.1
+    - -ID:\Apps\arm_gcc\14.3
+      rel1\arm-none-eabi\include\c++\14.3.1\arm-none-eabi\thumb\v7e-m+fp\hard
+    - -ID:\Apps\arm_gcc\14.3 rel1\arm-none-eabi\include\c++\14.3.1\backward
+    - -ID:\Apps\arm_gcc\14.3 rel1\lib\gcc\arm-none-eabi\14.3.1\include
+    - -ID:\Apps\arm_gcc\14.3 rel1\lib\gcc\arm-none-eabi\14.3.1\include-fixed
+    - -ID:\Apps\arm_gcc\14.3 rel1\arm-none-eabi\include
   Remove: []
   CompilationDatabase: ./build/Debug
-  Compiler: E:\stm32clt\STM32CubeCLT_1.18.0\GNU-tools-for-STM32\bin\arm-none-eabi-gcc.exe
+  Compiler: D:\Apps\arm_gcc\14.3 rel1\bin\arm-none-eabi-gcc.exe
