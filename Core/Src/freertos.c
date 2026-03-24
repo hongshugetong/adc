@@ -72,23 +72,13 @@ const osThreadAttr_t BlueTask_attributes = {
 osThreadId_t EC200taskHandle;
 const osThreadAttr_t EC200task_attributes = {
   .name = "EC200task",
-  .stack_size = 256 * 4,
+  .stack_size = 512 * 4,
   .priority = (osPriority_t) osPriorityLow,
 };
 /* Definitions for Adcqueue01 */
 osMessageQueueId_t Adcqueue01Handle;
 const osMessageQueueAttr_t Adcqueue01_attributes = {
   .name = "Adcqueue01"
-};
-/* Definitions for process */
-osSemaphoreId_t processHandle;
-const osSemaphoreAttr_t process_attributes = {
-  .name = "process"
-};
-/* Definitions for EC200_Recive */
-osEventFlagsId_t EC200_ReciveHandle;
-const osEventFlagsAttr_t EC200_Recive_attributes = {
-  .name = "EC200_Recive"
 };
 
 /* Private function prototypes -----------------------------------------------*/
@@ -116,10 +106,6 @@ void MX_FREERTOS_Init(void) {
   /* USER CODE BEGIN RTOS_MUTEX */
   /* add mutexes, ... */
   /* USER CODE END RTOS_MUTEX */
-
-  /* Create the semaphores(s) */
-  /* creation of process */
-  processHandle = osSemaphoreNew(1, 0, &process_attributes);
 
   /* USER CODE BEGIN RTOS_SEMAPHORES */
   /* add semaphores, ... */
@@ -153,10 +139,6 @@ void MX_FREERTOS_Init(void) {
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
   /* USER CODE END RTOS_THREADS */
-
-  /* Create the event(s) */
-  /* creation of EC200_Recive */
-  EC200_ReciveHandle = osEventFlagsNew(&EC200_Recive_attributes);
 
   /* USER CODE BEGIN RTOS_EVENTS */
   /* add events, ... */

@@ -295,10 +295,8 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
 {
     if (huart->Instance == USART3) 
     { 
-        for (uint16_t i = Size; i < sizeof(AT_Recive); i++) {
-        AT_Recive[i] = 0;
-        }
-        //memset(AT_Recive, '\0', sizeof(AT_Recive));
+        PQ_Write(&message, AT_Recive, Size);
+        memset(AT_Recive, '\0', sizeof(AT_Recive));
         HAL_UARTEx_ReceiveToIdle_DMA(&huart3, AT_Recive, sizeof(AT_Recive));
         // 关闭DMA传输过半中断（HAL库默认开启，但我们只需要接收完成中断）
         __HAL_DMA_DISABLE_IT(huart3.hdmarx, DMA_IT_HT);

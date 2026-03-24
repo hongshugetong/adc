@@ -170,6 +170,9 @@ void StartEC200task(void *argument)
     // AT_Publish_MQTT(adc_value);
     OTA_GET_OTAFlag();
     osDelay(pdMS_TO_TICKS(10000));
+    //OTA_CHECK_UPDATA();
+    osDelay(pdMS_TO_TICKS(10000));
   }
   /* USER CODE END StartEC200task */
 }
+

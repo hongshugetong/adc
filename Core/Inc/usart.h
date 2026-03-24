@@ -30,6 +30,7 @@ extern "C" {
 
 /* USER CODE BEGIN Includes */
 #include "string.h"
+#include "loop.h"
 /* USER CODE END Includes */
 
 extern UART_HandleTypeDef huart4;
@@ -39,7 +40,7 @@ extern UART_HandleTypeDef huart1;
 extern UART_HandleTypeDef huart3;
 
 /* USER CODE BEGIN Private defines */
-
+extern PacketQueue_t message;
 /* USER CODE END Private defines */
 
 void MX_UART4_Init(void);

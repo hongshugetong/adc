@@ -35,7 +35,7 @@ extern "C" {
 #include "FreeRTOS.h"
 /* Private includes --
 /* USER CODE END Includes */
-
+#include "loop.h"
 /* Exported types ------------------------------------------------------------*/
 /* USER CODE BEGIN ET */
 
@@ -67,7 +67,7 @@ void Error_Handler(void);
 #define W25Q64_CS_GPIO_Port GPIOG
 
 /* USER CODE BEGIN Private defines */
-extern uint16_t ADC_data[10];
+extern uint32_t ADC_data[10];
 extern uint16_t Data;
 extern osSemaphoreId_t processHandle;
 extern DMA_HandleTypeDef hdma_adc1;
@@ -75,7 +75,10 @@ extern osMessageQueueId_t Adcqueue01Handle;
 extern UART_HandleTypeDef huart4;
 extern UART_HandleTypeDef huart1;
 extern UART_HandleTypeDef huart3;
-extern uint8_t AT_Recive[1200];
+extern osMessageQueueId_t ReciveQueue02Handle;
+extern osThreadId_t DataprocessTaskHandle;
+extern uint8_t AT_Recive[1024];
+extern PacketQueue_t message;
 typedef struct{
   uint8_t Update_Buffer[1024];
   uint32_t W25Q64_Block_num;

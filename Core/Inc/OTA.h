@@ -1,15 +1,15 @@
 /**
-  ******************************************************************************
-  * @file    template.h
-  * @author  Your Name
-  * @brief   Header file for template functionality
-  ******************************************************************************
-  * @attention
-  *
-  * This file contains the declarations for the template module.
-  *
-  ******************************************************************************
-  */
+ ******************************************************************************
+ * @file    template.h
+ * @author  Your Name
+ * @brief   Header file for template functionality
+ ******************************************************************************
+ * @attention
+ *
+ * This file contains the declarations for the template module.
+ *
+ ******************************************************************************
+ */
 
 /* Define to prevent recursive inclusion -------------------------------------*/
 #ifndef OTA_H
@@ -29,13 +29,14 @@ extern "C" {
 extern uint8_t URL[80];
 extern OTA_INFO OTA_info;
 extern uint8_t TID[20];
-extern char* Readystrx;
+
 /* Exported constants --------------------------------------------------------*/
 
 /* Exported macro ------------------------------------------------------------*/
 
 /* Exported functions --------------------------------------------------------*/
 void OTA_GET_OTAFlag(void);
+void OTA_CHECK_UPDATA(void);
 #ifdef __cplusplus
 }
 #endif

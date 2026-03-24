@@ -37,7 +37,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-uint16_t ADC_data[10] = {0};
+uint32_t ADC_data[10] = {0};
 OTA_INFO OTA_info;
 /* USER CODE END PD */
 
@@ -100,6 +100,7 @@ int main(void)
   MX_USART3_UART_Init();
   MX_SPI1_Init();
   /* USER CODE BEGIN 2 */
+  PQ_Init(&message);
   HAL_ADC_Start_DMA(&hadc1, ADC_data, 10);
   __HAL_DMA_DISABLE_IT(&hdma_adc1, DMA_IT_HT);
   HAL_GPIO_WritePin(Reset_4G_GPIO_Port, Reset_4G_Pin, GPIO_PIN_SET);

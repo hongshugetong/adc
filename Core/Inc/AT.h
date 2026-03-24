@@ -6,6 +6,7 @@
 #include <stdbool.h>
 #include <string.h>
 #include "math.h"
+#include "loop.h"
 /* AT命令处理状态 */
 
 #define AT_TOKEN "version=2018-10-31&res=products%2FfThVVTJwFW&et=1799825577&method=md5&sign=E0kvULpfTgwdKhkyBCMl7g%3D%3D"
@@ -31,7 +32,7 @@ void MQTT_Init(void);
 void AT_CREAT_URL(uint8_t mode,uint8_t step);
 void AT_CREAT_GET(uint8_t mode,uint8_t* tid,uint8_t Range_start,uint8_t Range_end,uint8_t*OTA_VERSION);
 void AT_CREAT_POST(uint8_t mode,uint8_t*OTA_VERSION,uint8_t* tid,uint8_t step);
-void AT_GET_TID_VERSION_SIZE(uint8_t*OTA_VERSION,uint32_t FIlelen);
+void AT_GET_TID_VERSION_SIZE(uint8_t*OTA_VERSION,uint32_t*FIlelen);
 void AT_SET_URL(uint8_t mode,uint8_t step);
 void AT_Http_Read();
 void AT_SET_GET(uint8_t mode,uint8_t* tid,uint8_t Range_start,uint8_t Range_end,uint8_t*OTA_VERSION);
