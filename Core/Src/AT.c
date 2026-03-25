@@ -235,7 +235,7 @@ void AT_CREAT_GET(uint8_t mode,uint8_t* tid,uint8_t Range_start,uint8_t Range_en
         uint8_t Range[30];
         memset(Range, '\0', 30);
         sprintf(Range,"Range:%d-%d\r\n",Range_start,Range_end);
-        uint8_t End1[2]="\r\n";
+        uint8_t End1[3]="\r\n";
         strcat(AT_message,GET1);
         strcat(AT_message,Host1);
         strcat(AT_message,Authorization1);
@@ -299,14 +299,12 @@ void AT_CREAT_POST(uint8_t mode,uint8_t*OTA_VERSION,uint8_t* tid,uint8_t step)
     }
 }
 
-void AT_GET_TID_VERSION_SIZE(uint8_t*OTA_VERSION,uint32_t*FIlelen)
+void AT_GET_TID_VERSION_SIZE(uint8_t*OTA_VERSION,uint32_t*FIlelen,uint8_t*str)
 {
-
     //提取目标版本号，tid和文件大小
-    uint8_t*str;
     memset(OTA_VERSION, '\0', sizeof(OTA_VERSION));
     memset(TID, '\0', sizeof(TID));
-    osMessageQueueGet(ReciveQueue02Handle,&str,0, osWaitForever);
+
     uint8_t* version_start=strstr(str,"\"target\":\"")+strlen("\"target\":\"");
     uint8_t* version_end=strstr(str,"\",\"tid\":");
     uint8_t* tid_start=strstr(str,"\"tid\":")+strlen("\"tid\":");
@@ -397,13 +395,15 @@ void AT_SET_GET(uint8_t mode,uint8_t* tid,uint8_t Range_start,uint8_t Range_end,
     HAL_UART_Transmit(&huart1, "发送GET报文指令成功\r\n", 30, 100);
     AT_Send(AT_message);
     osDelay(pdMS_TO_TICKS(1000));
+    extstrx=AT_Recivejudge("OK");
     strx=AT_Recivejudge("0,200,");
-    while(strx==NULL)
+    while(extstrx==NULL||strx==NULL)
     {
         HAL_UART_Transmit(&huart1, "发送GET报文失败\r\n", 24, 100);
         HAL_UART_Transmit(&huart1, AT_message, strlen(AT_message), 100);
         AT_Send(AT_message);
         osDelay(pdMS_TO_TICKS(1000));
+        extstrx=AT_Recivejudge("OK");
         strx=AT_Recivejudge("0,200,");
     }
     HAL_UART_Transmit(&huart1, "发送GET报文成功\r\n", 24, 100);
@@ -436,7 +436,7 @@ void AT_SET_POST(uint8_t mode,uint8_t*OTA_VERSION,uint8_t* tid,uint8_t step)
     osDelay(pdMS_TO_TICKS(1000));
     extstrx=AT_Recivejudge("OK");
     strx=AT_Recivejudge("0,200,");
-    while(extstrx==NULL&&strx==NULL)
+    while(extstrx==NULL||strx==NULL)
     {
         HAL_UART_Transmit(&huart1, "发送POST报文失败\r\n", 25, 100);
         //HAL_UART_Transmit(&huart1, AT_Recive, strlen(AT_Recive), 100);

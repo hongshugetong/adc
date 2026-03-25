@@ -172,6 +172,7 @@ void StartEC200task(void *argument)
     osDelay(pdMS_TO_TICKS(10000));
     //OTA_CHECK_UPDATA();
     osDelay(pdMS_TO_TICKS(10000));
+    OTA_CHECK_UPDATA();
   }
   /* USER CODE END StartEC200task */
 }
