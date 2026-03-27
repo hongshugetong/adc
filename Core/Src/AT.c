@@ -302,9 +302,8 @@ void AT_CREAT_POST(uint8_t mode,uint8_t*OTA_VERSION,uint8_t* tid,uint8_t step)
 void AT_GET_TID_VERSION_SIZE(uint8_t*OTA_VERSION,uint32_t*FIlelen,uint8_t*str)
 {
     //提取目标版本号，tid和文件大小
-    memset(OTA_VERSION, '\0', sizeof(OTA_VERSION));
+    memset(OTA_VERSION, '\0', OTA_VERSION_SIZE);
     memset(TID, '\0', sizeof(TID));
-
     uint8_t* version_start=strstr(str,"\"target\":\"")+strlen("\"target\":\"");
     uint8_t* version_end=strstr(str,"\",\"tid\":");
     uint8_t* tid_start=strstr(str,"\"tid\":")+strlen("\"tid\":");
@@ -313,8 +312,6 @@ void AT_GET_TID_VERSION_SIZE(uint8_t*OTA_VERSION,uint32_t*FIlelen,uint8_t*str)
     uint8_t* size_end=strstr(str,",\"md5\":");
     if(version_start!=NULL&&version_end!=NULL&&tid_start!=NULL&&tid_end!=NULL&&size_start!=NULL&&size_end!=NULL)
     {
-        memset(OTA_VERSION, '\0', sizeof(OTA_VERSION));
-        memset(TID, '\0', sizeof(TID));
         memcpy(OTA_VERSION,version_start,version_end-version_start);
         memcpy(TID,tid_start,tid_end-tid_start);
         uint8_t FIlelen_size=size_end-size_start;
@@ -323,16 +320,15 @@ void AT_GET_TID_VERSION_SIZE(uint8_t*OTA_VERSION,uint32_t*FIlelen,uint8_t*str)
         {
             *FIlelen=*FIlelen * 10 + (*(size_start+i) - '0');
         }
-        uint8_t message[30];
+        uint8_t message[60];
         sprintf(message, "v:%s  tid:%s size:%d\r\n",OTA_VERSION,TID,*FIlelen);
-        HAL_UART_Transmit(&huart1,"message",28, 1000);
+        HAL_UART_Transmit(&huart1,message,strlen(message), 1000);
     }
     else 
     {
         HAL_UART_Transmit(&huart1,"服务器回复的任务消息出错\r\n",39, 1000);
         HAL_UART_Transmit(&huart1, AT_Recive, sizeof(AT_Recive), 1000);
     }
-    vPortFree(str);
 
 }
 void AT_SET_URL(uint8_t mode,uint8_t step)

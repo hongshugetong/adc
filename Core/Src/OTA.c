@@ -21,19 +21,20 @@ void OTA_GET_OTAFlag(void)
 void OTA_CHECK_UPDATA(void)
 { 
     char*str1=NULL,*str2=NULL;
-    uint8_t* str[250]={0};
+    uint8_t str[250]={0};
     uint16_t size;
     AT_SET_URL(1, 0);
     osDelay(pdMS_TO_TICKS(1000));
     AT_SET_GET(0, TID, 0, 0, "1.34");
     AT_Http_Read();
     PQ_Read(&message,str,&size);
+    HAL_UART_Transmit(&huart1, str, strlen(str), 100);
     str1=strstr((const char*)str, "succ");
     str2=AT_Recivejudge("+QHTTPREAD: 0");
     if((str1!=NULL)&&(str2!=NULL))
     {
         HAL_UART_Transmit(&huart1, "检测到OTA任务\r\n", 21, 100);
-        AT_GET_TID_VERSION_SIZE(OTA_info.OTA_VERSION, OTA_info.FileLen);
+        AT_GET_TID_VERSION_SIZE(OTA_info.OTA_VERSION, OTA_info.FileLen,str);
     }
     
 

@@ -65,6 +65,7 @@ void Error_Handler(void);
 #define Pwr_4G_GPIO_Port GPIOB
 #define W25Q64_CS_Pin GPIO_PIN_15
 #define W25Q64_CS_GPIO_Port GPIOG
+#define OTA_VERSION_SIZE 32
 
 /* USER CODE BEGIN Private defines */
 extern uint32_t ADC_data[10];
