@@ -72,7 +72,7 @@ const osThreadAttr_t BlueTask_attributes = {
 osThreadId_t EC200taskHandle;
 const osThreadAttr_t EC200task_attributes = {
   .name = "EC200task",
-  .stack_size = 512 * 4,
+  .stack_size = 1024 * 4,
   .priority = (osPriority_t) osPriorityLow,
 };
 /* Definitions for Adcqueue01 */

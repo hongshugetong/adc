@@ -1,22 +1,22 @@
 #include  "AT.h"
 uint8_t AT_message[410];
 uint8_t AT_Json[60];
-uint8_t AT_Recive[1024];
+uint8_t AT_Recive[1500];
 uint8_t URL[80];
 uint8_t TID[20];
 char *strx,*extstrx,*Readystrx;
 
 char * AT_Recivejudge(char*cmd)
 {   
-    uint8_t str[1024];
+    uint8_t str[1500];
     uint16_t size;
     char* result=NULL;
-    memset(str, '\0', 1024);
+    memset(str, '\0', 1500);
     size=0;
     PQ_Read(&message,str,&size);
     if(size!=0)
     {
-    HAL_UART_Transmit(&huart1, str, size, 100);
+    HAL_UART_Transmit(&huart1, str, size, HAL_MAX_DELAY);
     result=strstr((const char*)str, cmd);
     }
     HAL_UART_Transmit(&huart1, "----------\r\n", 13, 100);
@@ -200,7 +200,7 @@ void AT_CREAT_URL(uint8_t mode,uint8_t step)
     }
 }
 
-void AT_CREAT_GET(uint8_t mode,uint8_t* tid,uint8_t Range_start,uint8_t Range_end,uint8_t*OTA_VERSION)
+void AT_CREAT_GET(uint8_t mode,uint8_t* tid,uint32_t Range_start,uint32_t Range_end,uint8_t*OTA_VERSION)
 {
     switch (mode)
     {
@@ -231,7 +231,7 @@ void AT_CREAT_GET(uint8_t mode,uint8_t* tid,uint8_t Range_start,uint8_t Range_en
         memset(GET1, '\0', sizeof(GET1));
         sprintf(GET1,"GET https://iot-api.heclouds.com/fuse-ota/fThVVTJwFW/ec200/%s/download HTTP/1.1\r\n", tid);
         uint8_t Host1[30]="host:iot-api.heclouds.com\r\n";
-        uint8_t Authorization1[110]="Authorization:version=2018-10-31&res=products%2FfThVVTJwFW&et=1799825577&method=md5&sign=E0kvULpfTgwdKhkyBCMl7g%3D%3D\r\n";
+        uint8_t Authorization1[130]="Authorization:version=2018-10-31&res=products%2FfThVVTJwFW&et=1799825577&method=md5&sign=E0kvULpfTgwdKhkyBCMl7g%3D%3D\r\n";
         uint8_t Range[30];
         memset(Range, '\0', 30);
         sprintf(Range,"Range:%d-%d\r\n",Range_start,Range_end);
@@ -370,7 +370,7 @@ void AT_Http_Read()
     memset(AT_message, '\0', sizeof(AT_message));
     
 }
-void AT_SET_GET(uint8_t mode,uint8_t* tid,uint8_t Range_start,uint8_t Range_end,uint8_t*OTA_VERSION)
+void AT_SET_GET(uint8_t mode,uint8_t* tid,uint32_t Range_start,uint32_t Range_end,uint8_t*OTA_VERSION)
 {
     uint8_t AT_GET[30];
     memset(AT_GET, '\0', sizeof(AT_GET));
@@ -392,7 +392,7 @@ void AT_SET_GET(uint8_t mode,uint8_t* tid,uint8_t Range_start,uint8_t Range_end,
     AT_Send(AT_message);
     osDelay(pdMS_TO_TICKS(1000));
     extstrx=AT_Recivejudge("OK");
-    strx=AT_Recivejudge("0,200,");
+    strx=AT_Recivejudge("0,20");
     while(extstrx==NULL||strx==NULL)
     {
         HAL_UART_Transmit(&huart1, "发送GET报文失败\r\n", 24, 100);
@@ -400,7 +400,7 @@ void AT_SET_GET(uint8_t mode,uint8_t* tid,uint8_t Range_start,uint8_t Range_end,
         AT_Send(AT_message);
         osDelay(pdMS_TO_TICKS(1000));
         extstrx=AT_Recivejudge("OK");
-        strx=AT_Recivejudge("0,200,");
+        strx=AT_Recivejudge("0,20");
     }
     HAL_UART_Transmit(&huart1, "发送GET报文成功\r\n", 24, 100);
     memset(AT_message, '\0', sizeof(AT_message));

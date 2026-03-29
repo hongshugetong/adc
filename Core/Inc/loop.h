@@ -6,9 +6,9 @@
 #include <stdbool.h>
 #include "stm32f4xx_hal.h"
 // 配置参数
-#define PQ_BUFFER_SIZE      1500        // 共享缓冲区 8KB
+#define PQ_BUFFER_SIZE      2048       // 共享缓冲区 8KB
 #define PQ_MAX_PACKETS      16          // 最多 16 个包
-#define PQ_MAX_PACKET_LEN   1024        // 单包最大 1024 字节
+#define PQ_MAX_PACKET_LEN   1500        // 单包最大 1500 字节
 
 // 包描述符
 typedef struct {
@@ -39,5 +39,5 @@ uint16_t PQ_FreeSpace(PacketQueue_t *pq);
 void PQ_Compress(PacketQueue_t *pq);
 
 extern UART_HandleTypeDef huart1;
-extern PacketQueue_t message;
+
 #endif

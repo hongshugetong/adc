@@ -29,7 +29,9 @@ void OTA_CHECK_UPDATA(void)
     AT_Http_Read();
     PQ_Read(&message,str,&size);
     HAL_UART_Transmit(&huart1, str, strlen(str), 100);
+    HAL_UART_Transmit(&huart1, "----------\r\n", 13, 100);
     str1=strstr((const char*)str, "succ");
+    osDelay(pdMS_TO_TICKS(100));
     str2=AT_Recivejudge("+QHTTPREAD: 0");
     if((str1!=NULL)&&(str2!=NULL))
     {
@@ -38,4 +40,27 @@ void OTA_CHECK_UPDATA(void)
     }
     
 
+}
+
+void OTA_DOWNLOAD(void)
+{ 
+    char*str1=NULL;
+    uint8_t str[1500]={0},me[10];
+    uint16_t size;
+    AT_SET_URL(2, 0);
+    osDelay(pdMS_TO_TICKS(1000));
+    AT_SET_GET(1, TID, 0, 1024-1, "1.34");
+    AT_Http_Read();
+    PQ_Read(&message,str,&size);
+    HAL_UART_Transmit(&huart1, str, size, 100);
+    sprintf(me, "%d",size);
+    
+    HAL_UART_Transmit(&huart1, me, strlen(me), 100);
+    HAL_UART_Transmit(&huart1, "----------\r\n", 13, 100);
+    str1=AT_Recivejudge("+QHTTPREAD: 0");
+    if(str1!=NULL&&size==1024)
+    {
+        HAL_UART_Transmit(&huart1, "正在下载\r\n", 15, 100);
+
+    }
 }

@@ -169,10 +169,14 @@ void StartEC200task(void *argument)
     // osMessageQueueGet(Adcqueue01Handle, &adc_value, 0, osWaitForever);
     // AT_Publish_MQTT(adc_value);
     OTA_GET_OTAFlag();
-    osDelay(pdMS_TO_TICKS(10000));
+    osDelay(pdMS_TO_TICKS(1000));
     //OTA_CHECK_UPDATA();
-    osDelay(pdMS_TO_TICKS(10000));
+    osDelay(pdMS_TO_TICKS(1000));
     OTA_CHECK_UPDATA();
+    osDelay(pdMS_TO_TICKS(1000));
+    OTA_DOWNLOAD();
+    osDelay(pdMS_TO_TICKS(1000));
+    osDelay(1);
   }
   /* USER CODE END StartEC200task */
 }

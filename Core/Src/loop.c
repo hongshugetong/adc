@@ -29,6 +29,8 @@ uint16_t PQ_FreeSpace(PacketQueue_t *pq)
 // 写入一包（中断调用）
 bool PQ_Write(PacketQueue_t *pq, uint8_t *data, uint16_t len)
 {
+    // HAL_UART_Transmit(&huart1, data, len, HAL_MAX_DELAY);
+    // HAL_UART_Transmit(&huart1, "*******************\r\n", 24, HAL_MAX_DELAY);
     if (pq->count >= PQ_MAX_PACKETS)
     {
         HAL_UART_Transmit(&huart1, "包数量已满\r\n",18 , 100);

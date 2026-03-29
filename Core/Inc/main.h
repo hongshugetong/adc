@@ -33,9 +33,10 @@ extern "C" {
 /* USER CODE BEGIN Includes */
 #include "cmsis_os2.h"
 #include "FreeRTOS.h"
+#include "loop.h"
 /* Private includes --
 /* USER CODE END Includes */
-#include "loop.h"
+
 /* Exported types ------------------------------------------------------------*/
 /* USER CODE BEGIN ET */
 
@@ -65,9 +66,9 @@ void Error_Handler(void);
 #define Pwr_4G_GPIO_Port GPIOB
 #define W25Q64_CS_Pin GPIO_PIN_15
 #define W25Q64_CS_GPIO_Port GPIOG
-#define OTA_VERSION_SIZE 32
 
 /* USER CODE BEGIN Private defines */
+#define  OTA_VERSION_SIZE 32
 extern uint32_t ADC_data[10];
 extern uint16_t Data;
 extern osSemaphoreId_t processHandle;
@@ -78,7 +79,7 @@ extern UART_HandleTypeDef huart1;
 extern UART_HandleTypeDef huart3;
 extern osMessageQueueId_t ReciveQueue02Handle;
 extern osThreadId_t DataprocessTaskHandle;
-extern uint8_t AT_Recive[1024];
+extern uint8_t AT_Recive[1500];
 extern PacketQueue_t message;
 typedef struct{
   uint8_t Update_Buffer[1024];
