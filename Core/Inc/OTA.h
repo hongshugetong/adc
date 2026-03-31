@@ -37,7 +37,8 @@ extern uint8_t TID[20];
 /* Exported functions --------------------------------------------------------*/
 void OTA_GET_OTAFlag(void);
 void OTA_CHECK_UPDATA(void);
-void OTA_DOWNLOAD(void);
+void OTA_DOWNLOAD(uint32_t Range_start,uint32_t Range_end);
+void OTA_PUT_UPADATE_INformation(uint8_t step);
 #ifdef __cplusplus
 }
 #endif

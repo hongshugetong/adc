@@ -153,6 +153,8 @@ void StartEC200task(void *argument)
 {
   /* USER CODE BEGIN StartEC200task */
     float adc_value;
+    int i;
+    uint8_t message[30] = {0};
     EC20_Init();
     AT_HTTP_Init();
     // MQTT_Init();
@@ -170,11 +172,27 @@ void StartEC200task(void *argument)
     // AT_Publish_MQTT(adc_value);
     OTA_GET_OTAFlag();
     osDelay(pdMS_TO_TICKS(1000));
-    //OTA_CHECK_UPDATA();
-    osDelay(pdMS_TO_TICKS(1000));
     OTA_CHECK_UPDATA();
     osDelay(pdMS_TO_TICKS(1000));
-    OTA_DOWNLOAD();
+    if(OTA_info.flag==1)
+    {
+        for(i=0;i<OTA_info.FileLen[0]/1024;i++)
+        {
+            OTA_DOWNLOAD(i*1024,(i+1)*1024-1);
+
+            OTA_PUT_UPADATE_INformation(i*1024*100/OTA_info.FileLen[0]);
+            sprintf(message, "下载进度: %d%%", i*1024*100/OTA_info.FileLen[0]);
+            HAL_UART_Transmit(&huart1, message, strlen(message), 100);
+        }
+        OTA_DOWNLOAD(i*1024,OTA_info.FileLen[0]-1);
+        OTA_PUT_UPADATE_INformation(201);
+        sprintf(message, "下载进度: %d%%", 100);
+        HAL_UART_Transmit(&huart1, message, strlen(message), 100);
+    }
+    else
+    {
+        HAL_UART_Transmit(&huart1, "未检测到OTA任务\r\n", 24 , 100);
+    }
     osDelay(pdMS_TO_TICKS(1000));
     osDelay(1);
   }

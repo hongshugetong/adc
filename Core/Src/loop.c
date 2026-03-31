@@ -83,21 +83,28 @@ bool PQ_Read(PacketQueue_t *pq, uint8_t *data, uint16_t *len)
     // 复制数据
     memcpy(data, &pq->buffer[pkt->offset], pkt->len);
     *len = pkt->len;
+    uint8_t msg[10];
+    sprintf(msg, "%d   %d\r\n", pq->buf_r, pkt->offset);
+    HAL_UART_Transmit(&huart1,msg , strlen(msg), 100);
+    pkt->valid = false;
+    pq->r_pkt = (pq->r_pkt + 1) % PQ_MAX_PACKETS;
+    pq->count--;
     // 释放缓冲区空间（只有读取最老的包才能释放）
     if (pkt->offset == pq->buf_r) 
     {
+        
         pq->buf_r += pkt->len;
+        
         // 如果缓冲区已读超过一半，重置指针（回收空间）
         if (pq->buf_r > PQ_BUFFER_SIZE / 2)
         {
+            HAL_UART_Transmit(&huart1, "正在释放缓冲区\r\n", 24, 100);
             PQ_Compress(pq);
         }
     }
     
     // 清除包描述符
-    pkt->valid = false;
-    pq->r_pkt = (pq->r_pkt + 1) % PQ_MAX_PACKETS;
-    pq->count--;
+
     
     return true;
 }

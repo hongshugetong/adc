@@ -5,8 +5,9 @@
 #include <string.h>
 #include <stdbool.h>
 #include "stm32f4xx_hal.h"
+#include "stdio.h"
 // 配置参数
-#define PQ_BUFFER_SIZE      2048       // 共享缓冲区 8KB
+#define PQ_BUFFER_SIZE      4096       // 共享缓冲区 8KB
 #define PQ_MAX_PACKETS      16          // 最多 16 个包
 #define PQ_MAX_PACKET_LEN   1500        // 单包最大 1500 字节
 

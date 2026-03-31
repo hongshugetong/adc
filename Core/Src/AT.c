@@ -280,14 +280,14 @@ void AT_CREAT_POST(uint8_t mode,uint8_t*OTA_VERSION,uint8_t* tid,uint8_t step)
         sprintf(POST1,"POST https://iot-api.heclouds.com/fuse-ota/fThVVTJwFW/ec200/%s/status HTTP/1.1\r\n", tid);
         uint8_t Host1[30]="host:iot-api.heclouds.com\r\n";
         uint8_t Content_Type1[40]="Content-Type: application/json\r\n";
-        uint8_t Authorization1[110]="Authorization:version=2018-10-31&res=products%2FfThVVTJwFW&et=1799825577&method=md5&sign=E0kvULpfTgwdKhkyBCMl7g%3D%3D\r\n";
+        uint8_t Authorization1[130]="Authorization:version=2018-10-31&res=products%2FfThVVTJwFW&et=1799825577&method=md5&sign=E0kvULpfTgwdKhkyBCMl7g%3D%3D\r\n";
         uint8_t Content_length1[30];
         memset(Content_length1, '\0', 30);
-        uint8_t End1[2]="\r\n";
+        uint8_t End1[3]="\r\n";
         char body1[50];
         memset(body1, '\0', sizeof(body1));
         sprintf(body1,"{\"step\":%d}",step);
-        sprintf(Content_length1,"Content-Length:%d\r\n",sizeof(body1));
+        sprintf(Content_length1,"Content-Length:%d\r\n",strlen(body1));
         strcat(AT_message,POST1);
         strcat(AT_message,Host1);
         strcat(AT_message,Content_Type1);
@@ -429,7 +429,7 @@ void AT_SET_POST(uint8_t mode,uint8_t*OTA_VERSION,uint8_t* tid,uint8_t step)
     HAL_UART_Transmit(&huart1, "发送POST报文指令成功\r\n", 31, 100);
     AT_CREAT_POST(mode,OTA_VERSION,tid,step);
     AT_Send(AT_message);
-    osDelay(pdMS_TO_TICKS(1000));
+    osDelay(pdMS_TO_TICKS(1500));
     extstrx=AT_Recivejudge("OK");
     strx=AT_Recivejudge("0,200,");
     while(extstrx==NULL||strx==NULL)
