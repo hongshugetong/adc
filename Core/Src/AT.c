@@ -13,7 +13,10 @@ char * AT_Recivejudge(char*cmd)
     char* result=NULL;
     memset(str, '\0', 1500);
     size=0;
-    PQ_Read(&message,str,&size);
+    while(PQ_Read(&message,str,&size)==false)
+    {
+        osDelay(pdMS_TO_TICKS(100));
+    }
     if(size!=0)
     {
     HAL_UART_Transmit(&huart1, str, size, HAL_MAX_DELAY);
@@ -21,6 +24,7 @@ char * AT_Recivejudge(char*cmd)
     }
     HAL_UART_Transmit(&huart1, "----------\r\n", 13, 100);
     return result;
+
 }
 void AT_Print(uint8_t*data)
 {
@@ -337,24 +341,19 @@ void AT_SET_URL(uint8_t mode,uint8_t step)
     memset(AT_message, '\0', sizeof(AT_message));
     sprintf(AT_message,"AT+QHTTPURL=%d,80\r\n",strlen(URL));
     AT_Send(AT_message);
-    osDelay(pdMS_TO_TICKS(2000));
     Readystrx=AT_Recivejudge("CONNECT");
     while(Readystrx==NULL)
     {
         HAL_UART_Transmit(&huart1,"发送设置URL指令失败\r\n", 30, 1000);
-        AT_Send(AT_message);
-        osDelay(pdMS_TO_TICKS(1000));
         Readystrx=AT_Recivejudge("CONNECT");
     }
     HAL_UART_Transmit(&huart1,"发送设置URL指令成功\r\n", 30, 1000);
     AT_Send(URL);
-    osDelay(pdMS_TO_TICKS(1000));
     Readystrx=AT_Recivejudge("OK");
     while(Readystrx==NULL)
     {
         HAL_UART_Transmit(&huart1,"发送URL失败\r\n", 20, 1000);
         AT_Send(URL);
-        osDelay(pdMS_TO_TICKS(1000));
         Readystrx=AT_Recivejudge("OK");
     }
     HAL_UART_Transmit(&huart1,"发送URL成功\r\n", 20, 1000);
@@ -366,7 +365,6 @@ void AT_Http_Read()
     memset(AT_message, '\0', sizeof(AT_message));
     sprintf(AT_message, "AT+QHTTPREAD=80\r\n");
     AT_Send(AT_message);
-    osDelay(pdMS_TO_TICKS(500));
     memset(AT_message, '\0', sizeof(AT_message));
     
 }
@@ -378,28 +376,31 @@ void AT_SET_GET(uint8_t mode,uint8_t* tid,uint32_t Range_start,uint32_t Range_en
     AT_CREAT_GET(mode,tid,Range_start,Range_end,OTA_VERSION);
     sprintf(AT_GET,"AT+QHTTPGET=80,%d,80\r\n",strlen(AT_message));
     AT_Send(AT_GET);
-    osDelay(pdMS_TO_TICKS(1000));
+    //osDelay(pdMS_TO_TICKS(300));
     strx=AT_Recivejudge("CONNECT");
     while(strx==NULL)
     {
         HAL_UART_Transmit(&huart1, "发送GET报文指令失败\r\n", 30, 100);
         sprintf(AT_GET,"AT+QHTTPGET=80,%d,80\r\n",strlen(AT_message));
         AT_Send(AT_GET);
-        osDelay(pdMS_TO_TICKS(1000));
+        //osDelay(pdMS_TO_TICKS(300));
         strx=AT_Recivejudge("CONNECT");
     }
+    //osDelay(pdMS_TO_TICKS(500));
     HAL_UART_Transmit(&huart1, "发送GET报文指令成功\r\n", 30, 100);
     AT_Send(AT_message);
-    osDelay(pdMS_TO_TICKS(1000));
+    //osDelay(pdMS_TO_TICKS(100));
     extstrx=AT_Recivejudge("OK");
+    //osDelay(pdMS_TO_TICKS(2000));
     strx=AT_Recivejudge("0,20");
     while(extstrx==NULL||strx==NULL)
     {
         HAL_UART_Transmit(&huart1, "发送GET报文失败\r\n", 24, 100);
-        HAL_UART_Transmit(&huart1, AT_message, strlen(AT_message), 100);
+        //HAL_UART_Transmit(&huart1, AT_message, strlen(AT_message), 100);
         AT_Send(AT_message);
-        osDelay(pdMS_TO_TICKS(1000));
+        //osDelay(pdMS_TO_TICKS(100));
         extstrx=AT_Recivejudge("OK");
+        //osDelay(pdMS_TO_TICKS(2000));
         strx=AT_Recivejudge("0,20");
     }
     HAL_UART_Transmit(&huart1, "发送GET报文成功\r\n", 24, 100);
@@ -481,27 +482,24 @@ void EC20_Init(void)
     osDelay(pdMS_TO_TICKS(500));
     AT_GSM();
     osDelay(pdMS_TO_TICKS(500));
-    strx=AT_Recivejudge("+CREG: 0,1");
-    extstrx=AT_Recivejudge("+CREG: 0,5");
+    strx=AT_Recivejudge("+CREG: 0,");
     while((strx==NULL)&&(extstrx==NULL))
     {
         AT_GSM();
         osDelay(pdMS_TO_TICKS(500));
-        strx=AT_Recivejudge("+CREG: 0,1");
-        extstrx=AT_Recivejudge("+CREG: 0,5");
+        strx=AT_Recivejudge("+CREG: 0,");
+
     }
     HAL_UART_Transmit(&huart1,"GSM网络已注册", 19, 1000);
     osDelay(pdMS_TO_TICKS(500));
     AT_GPRS();
     osDelay(pdMS_TO_TICKS(500));
-    strx=AT_Recivejudge("+CGREG: 0,1");
-    extstrx=AT_Recivejudge("+CGREG: 0,5");
+    strx=AT_Recivejudge("+CGREG: 0,");
     while((strx==NULL)&&(extstrx==NULL))
     {
         AT_GPRS();
         osDelay(pdMS_TO_TICKS(500));
-        strx=AT_Recivejudge("+CGREG: 0,1");
-        extstrx=AT_Recivejudge("+CGREG: 0,5");
+        strx=AT_Recivejudge("+CGREG: 0,");
     }
     HAL_UART_Transmit(&huart1,"GPRS网络已注册", 20, 1000);
 }

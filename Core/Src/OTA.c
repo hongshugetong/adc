@@ -5,9 +5,9 @@ void OTA_GET_OTAFlag(void)
 {
     char*str1=NULL,*str2=NULL;
     //从W25Q64中获取OTA_INFO
-    W25Q64_READ_OTA_INFO(&OTA_info);
+    //W25Q64_READ_OTA_INFO(&OTA_info);
     AT_SET_URL(0, 0);
-    osDelay(pdMS_TO_TICKS(1000));
+    osDelay(pdMS_TO_TICKS(100));
     AT_SET_POST(0, "1.34", 0, 0);
     AT_Http_Read();
     str1=AT_Recivejudge("succ");
@@ -24,10 +24,13 @@ void OTA_CHECK_UPDATA(void)
     uint8_t str[250]={0};
     uint16_t size;
     AT_SET_URL(1, 0);
-    osDelay(pdMS_TO_TICKS(1000));
+    osDelay(pdMS_TO_TICKS(100));
     AT_SET_GET(0, TID, 0, 0, "1.34");
     AT_Http_Read();
-    PQ_Read(&message,str,&size);
+    while(PQ_Read(&message,str,&size)==false)
+    {
+        osDelay(pdMS_TO_TICKS(100));
+    }
     HAL_UART_Transmit(&huart1, str, strlen(str), 100);
     HAL_UART_Transmit(&huart1, "----------\r\n", 13, 100);
     str1=strstr((const char*)str, "succ");
@@ -50,10 +53,13 @@ void OTA_DOWNLOAD(uint32_t Range_start,uint32_t Range_end)
     uint8_t str[1500]={0},me[10];//11
     uint16_t size;
     AT_SET_URL(2, 0);
-    osDelay(pdMS_TO_TICKS(1000));
+    osDelay(pdMS_TO_TICKS(100));
     AT_SET_GET(1, TID, Range_start, Range_end, "1.34");
     AT_Http_Read();
-    PQ_Read(&message,str,&size);
+    while(PQ_Read(&message,str,&size)==false)
+    {
+        osDelay(pdMS_TO_TICKS(100));
+    }
     HAL_UART_Transmit(&huart1, me, strlen(me), 100);
     HAL_UART_Transmit(&huart1, "----------\r\n", 13, 100);
     str1=AT_Recivejudge("+QHTTPREAD: 0");

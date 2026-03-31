@@ -70,7 +70,7 @@ bool PQ_Read(PacketQueue_t *pq, uint8_t *data, uint16_t *len)
 {
     if (pq->count == 0)
     {
-        HAL_UART_Transmit(&huart1, "包数量为0\r\n",13 , 100);
+        //HAL_UART_Transmit(&huart1, "包数量为0\r\n",13 , 100);
         return false;
     } 
     Packet_t *pkt = &pq->packets[pq->r_pkt];
