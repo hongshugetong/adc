@@ -507,24 +507,30 @@ void EC20_Init(void)
 void MQTT_Init(void)
 {
     AT_setMQTT_version(1);
+    AT_Recivejudge("OK");
     osDelay(pdMS_TO_TICKS(500));
     AT_OpenMQTT();
     osDelay(pdMS_TO_TICKS(500));
-    strx=AT_Recivejudge("+QMTCONN: 0,0");
-    while(strx==NULL)
+    Readystrx=AT_Recivejudge("OK");
+    strx=AT_Recivejudge("+QMTOPEN: 0,0");
+    while(strx==NULL&&Readystrx==NULL)
     {
         AT_ConnectMQTT();
         osDelay(pdMS_TO_TICKS(500));
-        strx=AT_Recivejudge("+QMTCONN: 0,0");
+        Readystrx=AT_Recivejudge("OK");
+        strx=AT_Recivejudge("+QMTOPEN: 0,0");
     }
-    HAL_UART_Transmit(&huart1,"MQTT已连接", 15, 1000);    
+    HAL_UART_Transmit(&huart1,"MQTT已连接", 15, 1000); 
+    osDelay(pdMS_TO_TICKS(500));   
     AT_ConnectMQTT();
     osDelay(pdMS_TO_TICKS(500));
+    Readystrx=AT_Recivejudge("OK");
     strx=AT_Recivejudge("+QMTCONN: 0,0,0");
-    while(strx==NULL)
+    while(strx==NULL&&Readystrx==NULL)
     {
         AT_ConnectMQTT();
         osDelay(pdMS_TO_TICKS(500));
+        Readystrx=AT_Recivejudge("OK");
         strx=AT_Recivejudge("+QMTCONN: 0,0,0");
     }
     HAL_UART_Transmit(&huart1,"MQTT已登入", 14, 1000);

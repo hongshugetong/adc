@@ -157,7 +157,7 @@ void StartEC200task(void *argument)
     uint8_t message[30] = {0};
     EC20_Init();
     AT_HTTP_Init();
-    // MQTT_Init();
+    MQTT_Init();
     // osDelay( pdMS_TO_TICKS(10000));
     // AT_setMQTT_version(1);
     // osDelay( pdMS_TO_TICKS(1000));
