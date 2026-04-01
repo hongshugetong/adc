@@ -32,7 +32,7 @@ void OTA_CHECK_UPDATA(void)
         osDelay(pdMS_TO_TICKS(100));
     }
     HAL_UART_Transmit(&huart1, str, strlen(str), 100);
-    HAL_UART_Transmit(&huart1, "----------\r\n", 13, 100);
+    HAL_UART_Transmit(&huart1, "*******\r\n", 10, 100);
     str1=strstr((const char*)str, "succ");
     osDelay(pdMS_TO_TICKS(100));
     str2=AT_Recivejudge("+QHTTPREAD: 0");
