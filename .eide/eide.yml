@@ -85,8 +85,8 @@ targets:
         interface: stlink
         target: stm32f1x
       STLink:
-        address: "0x08000000"
-        bin: ""
+        address: "0x08020000"
+        bin: ${ExecutableName}.bin
         elFile: None
         optionBytes: .eide/debug.st.option.bytes.ini
         otherCmds: ""

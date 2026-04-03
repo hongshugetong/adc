@@ -40,7 +40,7 @@ void quickSort(uint16_t arr[], uint16_t low, uint16_t high)
 }
 
 // 处理数组，剔除前1%的极小值和后1%的极大值后求平均
-float processArray(uint16_t *arr, uint16_t size)
+float processArray(uint32_t *arr, uint16_t size)
 {
     if (size <= 0) {
         return 0.0;
@@ -111,9 +111,9 @@ void StartDataprocessTask(void *argument)
     uint16_t average;
     float data;
     for (;;) {
-        // average = processArray(ADC_data, 10);
-        // data    = ad12_to_float(average);
-        // osMessageQueuePut(Adcqueue01Handle, &data, 0, osWaitForever);
+        average = processArray(ADC_data, 10);
+        data    = ad12_to_float(average);
+        osMessageQueuePut(Adcqueue01Handle, &data, 0, osWaitForever);
         osDelay(100);
     }
     /* USER CODE END StartDataprocessTask */
@@ -168,8 +168,10 @@ void StartEC200task(void *argument)
 //   /* Infinite loop */
   for(;;)
   {
-    // osMessageQueueGet(Adcqueue01Handle, &adc_value, 0, osWaitForever);
-    // AT_Publish_MQTT(adc_value);
+    osMessageQueueGet(Adcqueue01Handle, &adc_value, 0, osWaitForever);
+    AT_Publish_MQTT(adc_value);
+    AT_Recivejudge("OK");
+    AT_Recivejudge("+QMTPUBEX");
     OTA_GET_OTAFlag();
     osDelay(pdMS_TO_TICKS(100));
     OTA_CHECK_UPDATA();
