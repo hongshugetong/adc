@@ -105,8 +105,9 @@ void AT_Publish_MQTT(float adc_value)
     create_adc_json(adc_value, AT_Json);
     sprintf(AT_message,"AT+QMTPUBEX=0,0,0,0,\"%s\",%d\r\n",AT_MQTT_Publish,strlen(AT_Json));
     AT_Send(AT_message);
+    AT_Recivejudge("> --");
     memset(AT_message, '\0', sizeof(AT_message));
-    osDelay(pdMS_TO_TICKS(1000));
+    //osDelay(pdMS_TO_TICKS(1000));
     AT_Send(AT_Json);
     memset(AT_message, '\0', sizeof(AT_Json));
 }
@@ -344,6 +345,7 @@ void AT_SET_URL(uint8_t mode,uint8_t step)
     Readystrx=AT_Recivejudge("CONNECT");
     while(Readystrx==NULL)
     {
+        //AT_Send(AT_message);
         HAL_UART_Transmit(&huart1,"发送设置URL指令失败\r\n", 30, 1000);
         Readystrx=AT_Recivejudge("CONNECT");
     }

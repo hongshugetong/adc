@@ -172,12 +172,14 @@ void StartEC200task(void *argument)
     AT_Publish_MQTT(adc_value);
     AT_Recivejudge("OK");
     AT_Recivejudge("+QMTPUBEX");
+    osDelay(pdMS_TO_TICKS(100));
     OTA_GET_OTAFlag();
     osDelay(pdMS_TO_TICKS(100));
     OTA_CHECK_UPDATA();
     osDelay(pdMS_TO_TICKS(100));
     if(OTA_info.flag==1)
     {
+        W25QXX_Erase_Block(1);
         for(i=0;i<OTA_info.FileLen[0]/1024;i++)
         {
             OTA_DOWNLOAD(i*1024,(i+1)*1024-1);
@@ -189,6 +191,7 @@ void StartEC200task(void *argument)
         OTA_PUT_UPADATE_INformation(201);
         sprintf(message, "下载进度: %d%%", 100);
         HAL_UART_Transmit(&huart1, message, strlen(message), 100);
+        NVIC_SystemReset();
     }
     else
     {

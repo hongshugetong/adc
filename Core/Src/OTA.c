@@ -60,8 +60,6 @@ void OTA_DOWNLOAD(uint32_t Range_start,uint32_t Range_end)
     {
         osDelay(pdMS_TO_TICKS(100));
     }
-    HAL_UART_Transmit(&huart1, me, strlen(me), 100);
-    HAL_UART_Transmit(&huart1, "----------\r\n", 13, 100);
     str1=AT_Recivejudge("+QHTTPREAD: 0");
     if(str1!=NULL)
     {

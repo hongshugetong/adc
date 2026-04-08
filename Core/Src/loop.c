@@ -83,9 +83,6 @@ bool PQ_Read(PacketQueue_t *pq, uint8_t *data, uint16_t *len)
     // 复制数据
     memcpy(data, &pq->buffer[pkt->offset], pkt->len);
     *len = pkt->len;
-    uint8_t msg[10];
-    sprintf(msg, "%d   %d\r\n", pq->buf_r, pkt->offset);
-    HAL_UART_Transmit(&huart1,msg , strlen(msg), 100);
     pkt->valid = false;
     pq->r_pkt = (pq->r_pkt + 1) % PQ_MAX_PACKETS;
     pq->count--;
